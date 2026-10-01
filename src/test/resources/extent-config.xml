@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<extentreports>
+    <configuration>
+        <theme>standard</theme>
+        <documentTitle>Playwright BDD Automation Report</documentTitle>
+        <reportName>Playwright Java BDD Test Execution</reportName>
+        <encoding>UTF-8</encoding>
+    </configuration>
+</extentreports>
