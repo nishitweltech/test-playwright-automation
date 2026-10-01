@@ -18,6 +18,7 @@
         <junit.version>4.13.2</junit.version>
         <extent.adapter.version>1.14.0</extent.adapter.version>
         <surefire.version>3.5.3</surefire.version>
+        <exec.maven.version>3.5.0</exec.maven.version>
     </properties>
 
     <dependencies>
@@ -69,6 +70,12 @@
                         <cucumber.publish.quiet>true</cucumber.publish.quiet>
                     </systemPropertyVariables>
                 </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>${exec.maven.version}</version>
             </plugin>
         </plugins>
     </build>
