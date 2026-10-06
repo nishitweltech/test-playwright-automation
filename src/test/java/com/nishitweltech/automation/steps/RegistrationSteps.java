@@ -18,6 +18,7 @@ public class RegistrationSteps {
         landingPage.open();
         landingPage.openRegistration();
         registrationPage = new RegistrationPage();
+        registrationPage.version();
     }
 
     @Then("the registration form marks its required fields")
