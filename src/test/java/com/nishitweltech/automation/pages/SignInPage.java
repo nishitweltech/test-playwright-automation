@@ -6,8 +6,8 @@ import com.microsoft.playwright.options.WaitForSelectorState;
 public class SignInPage extends BasePage {
     private static final String EMAIL = "input[placeholder='E mail']";
     private static final String PASSWORD = "input[placeholder='Password']";
-    private static final String SIGN_IN_BUTTON = "#enterbtn";
-    private static final String ERROR_MESSAGE = "#errormsg";
+    private static final String SIGN_IN_BUTTON = "#enter_btn";
+    private static final String ERROR_MESSAGE = "#error_msg";
 
     public void signIn(String email, String password) {
         fill(EMAIL, email);
