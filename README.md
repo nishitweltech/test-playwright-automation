@@ -28,11 +28,13 @@ mvn exec:java -Dexec.mainClass=com.microsoft.playwright.CLI -Dexec.args="install
 
 ## Run tests
 
-Run all Cucumber scenarios:
+Run all Cucumber scenarios through the TestNG suite:
 
 ```bash
 mvn clean test
 ```
+
+The Maven build uses `src/test/resources/testng.xml`, which runs the Cucumber TestNG runner and test-data reader checks.
 
 Run only smoke scenarios:
 
@@ -57,6 +59,17 @@ The sign-in smoke scenario verifies that the site's actual invalid-credentials
 message appears. Registration scenarios check the live form's required fields
 and client-side password confirmation. No private or pre-registered account is
 needed.
+
+## TestNG, Extent Reports, and Test Data
+
+- TestNG runner: `src/test/java/com/nishitweltech/automation/runners/TestNGRunner.java`
+- TestNG suite: `src/test/resources/testng.xml`
+- Extent configuration: `src/test/resources/extent.properties` and `src/test/resources/extent-config.xml`
+- Extent Spark report: `test-output/extent/Spark.html`
+- Reusable CSV reader: `src/test/java/com/nishitweltech/automation/utils/TestDataReader.java`
+- Sample data: `src/test/resources/testdata/login-data.csv`
+
+`TestDataReader.readCsv(...)` loads classpath CSV data into `List<Map<String, String>>`, so test or step classes can consume rows by column name.
 
 ## Reports
 
