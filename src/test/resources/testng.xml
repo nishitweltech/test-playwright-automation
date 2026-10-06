@@ -4,6 +4,7 @@
     <test name="Cucumber TestNG Tests">
         <classes>
             <class name="com.nishitweltech.automation.runners.TestNGRunner"/>
+            <class name="com.nishitweltech.automation.utils.TestDataReaderTest"/>
         </classes>
     </test>
 </suite>
