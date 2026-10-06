@@ -24,6 +24,8 @@ public final class PlaywrightManager {
         PLAYWRIGHT.set(playwright);
         BROWSER.set(browser);
         PAGE.set(page);
+
+
     }
 
     public static Page page() {

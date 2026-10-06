@@ -25,4 +25,5 @@ public abstract class BasePage {
     protected String text(String selector) {
         return page.locator(selector).innerText();
     }
+
 }
