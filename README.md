@@ -1,76 +1,85 @@
 # Playwright Java BDD Automation Framework
 
-A maintainable UI automation framework built with:
-
-- Java 17
-- Maven
-- Microsoft Playwright
-- Cucumber BDD
-- Page Object Model
-- Extent Reports
-- JUnit 4
-
-## Project structure
-
-```
-src/
-  test/
-    java/com/nishitweltech/automation/
-      hooks/
-        TestHooks.java
-      pages/
-        BasePage.java
-        LoginPage.java
-      runners/
-        TestRunner.java
-      steps/
-        LoginSteps.java
-      utils/
-        ConfigReader.java
-        PlaywrightManager.java
-    resources/
-      config/
-        config.properties
-      features/
-        login.feature
-      extent.properties
-```
+This repository contains a runnable UI test framework for the public demo at
+`https://demo.automationtesting.in/Index.html`. It uses Java 17, Maven,
+Playwright for Java, Cucumber BDD with JUnit 4, Page Object Model, and the
+ExtentReports Cucumber 7 adapter.
 
 ## Prerequisites
 
-- JDK 17+
-- Maven 3.9+
-- Internet access for Maven dependencies and the demo application
+- JDK 17 or newer
+- Maven 3.9 or newer
+- Internet access for Maven dependencies, Playwright browser installation, and
+  the demo application
 
-## Run tests
+## Install the browser
 
-Install Playwright browser binaries:
+From the repository root, install Playwright's Chromium browser:
 
 ```bash
 mvn exec:java -Dexec.mainClass=com.microsoft.playwright.CLI -Dexec.args="install chromium"
 ```
 
-Run the BDD suite:
+On Linux CI, install the browser's operating-system dependencies as well:
+
+```bash
+mvn exec:java -Dexec.mainClass=com.microsoft.playwright.CLI -Dexec.args="install --with-deps chromium"
+```
+
+## Run tests
+
+Run all Cucumber scenarios:
 
 ```bash
 mvn clean test
 ```
 
-Run against another URL:
+Run only smoke scenarios:
 
 ```bash
-mvn clean test -DbaseUrl=https://your-app.example.com
+mvn clean test -Dcucumber.filter.tags="@smoke"
 ```
 
-Reports are generated under `test-output/extent/`.
+Run a specific feature:
 
-The sample feature targets Sauce Demo and uses its public standard test credentials. Replace them in `config.properties` or pass JVM properties for your own application.
+```bash
+mvn clean test -Dcucumber.features=src/test/resources/features/registration.feature
+```
 
-## Design notes
+Set configuration with JVM system properties (system properties override
+`src/test/resources/config/config.properties`):
 
-- `PlaywrightManager` owns the Playwright lifecycle.
-- `BasePage` centralizes common page operations.
-- Page classes contain locators and UI actions only.
-- Cucumber step definitions contain business-level glue, not locator details.
-- Hooks capture a screenshot on failure and attach it to the Cucumber scenario.
-- Extent's Cucumber 7 adapter produces the HTML report.
+```bash
+mvn clean test -DbaseUrl=https://demo.automationtesting.in/Index.html -Dheadless=false -Dtimeout=30000
+```
+
+The sign-in smoke scenario verifies that the site's actual invalid-credentials
+message appears. Registration scenarios check the live form's required fields
+and client-side password confirmation. No private or pre-registered account is
+needed.
+
+## Reports
+
+After a test run:
+
+- Cucumber HTML: `test-output/cucumber/cucumber.html`
+- Cucumber JSON: `test-output/cucumber/cucumber.json`
+- Extent Spark HTML: `test-output/extent/Spark.html`
+- Failure screenshots are attached to the failed Cucumber scenario and included
+  in the report output.
+
+## Project structure
+
+```text
+src/test/java/com/nishitweltech/automation/
+  hooks/          Browser setup, teardown, and failure screenshots
+  pages/          LandingPage, SignInPage, RegistrationPage, and BasePage
+  runners/        Cucumber JUnit runner and report configuration
+  steps/          Sign-in and registration step definitions
+  utils/          Configuration reader and Playwright lifecycle
+src/test/resources/
+  config/         Runtime defaults
+  features/       Cucumber scenarios
+  extent.properties
+  extent-config.xml
+```
