@@ -17,7 +17,6 @@
         <cucumber.version>7.34.9</cucumber.version>
         <junit.version>4.13.2</junit.version>
         <testng.version>7.10.2</testng.version>
-        <poi.version>5.4.1</poi.version>
         <extent.adapter.version>1.14.0</extent.adapter.version>
         <surefire.version>3.5.3</surefire.version>
         <exec.maven.version>3.5.0</exec.maven.version>
@@ -59,12 +58,6 @@
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
             <version>${testng.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.poi</groupId>
-            <artifactId>poi-ooxml</artifactId>
-            <version>${poi.version}</version>
             <scope>test</scope>
         </dependency>
 
