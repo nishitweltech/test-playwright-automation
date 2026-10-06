@@ -1,11 +1,10 @@
-Feature: Sauce Demo login
+Feature: Sign in
 
-  As a registered user
-  I want to log in
-  So that I can access the products page
+  The demo application exposes a Sign In flow from its landing page.
 
-  @smoke @login
-  Scenario: Successful login with standard user
-    Given I am on the Sauce Demo login page
-    When I login with the standard test user
-    Then the products page should be displayed
+  @smoke @signin
+  Scenario: Invalid credentials are rejected
+    Given I open the demo application's landing page
+    When I choose Sign In
+    And I submit invalid sign-in credentials
+    Then the invalid credentials message is displayed

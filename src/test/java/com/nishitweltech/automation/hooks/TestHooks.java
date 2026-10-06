@@ -5,9 +5,6 @@ import io.cucumber.java.After;
 import io.cucumber.java.Before;
 import io.cucumber.java.Scenario;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
-
 public class TestHooks {
     @Before
     public void setUp() {
