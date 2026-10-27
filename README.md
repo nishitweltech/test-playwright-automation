@@ -96,3 +96,32 @@ src/test/resources/
   extent.properties
   extent-config.xml
 ```
+
+
+## Petstore API Automation (Playwright Java)
+
+The same Maven/TestNG project also exercises the public Swagger Petstore REST API
+using Playwright Java's `APIRequestContext` (no browser is required for API tests).
+
+- Base URL: `https://petstore.swagger.io/v2`
+- Override with `-DapiBaseUrl=https://your-host/v2` or `PETSTORE_BASE_URL`.
+- API tests: `src/test/java/com/nishitweltech/automation/api/`
+- Extent Spark API report: `test-output/api/ApiSpark.html`
+- Run the complete UI + API suite: `mvn -B clean test`
+- Run API tests only: `mvn -B -Dtest=PetApiTest,StoreApiTest,UserApiTest test`
+
+### API coverage
+
+- **Pet:** create, retrieve, update, delete, find by status, find by tags,
+  upload image, and unknown pet ID negative validation.
+- **Store:** inventory, create/retrieve/delete order, and invalid order ID.
+- **User:** create/retrieve/update/delete, create users with array/list payloads,
+  login, and logout.
+- **Cross-cutting checks:** HTTP status codes, response payload assertions,
+  JSON response shape, unique test data, and cleanup for created test entities.
+
+The Swagger Petstore is a shared public demo service, so its data and availability
+are outside this project's control. API scenarios mutate demo data using unique
+IDs/usernames and should be run against a dedicated environment for deterministic
+production-grade CI. The test suite validates documented success and selected
+negative paths; it does not claim exhaustive security/performance testing.

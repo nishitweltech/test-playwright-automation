@@ -1,10 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
-<suite name="Playwright BDD Test Suite" verbose="1">
+<suite name="Playwright UI and API Test Suite" verbose="1">
+    <listeners>
+        <listener class-name="com.nishitweltech.automation.api.ApiTestListener"/>
+    </listeners>
     <test name="Cucumber TestNG Tests">
         <classes>
             <class name="com.nishitweltech.automation.runners.TestNGRunner"/>
             <class name="com.nishitweltech.automation.utils.TestDataReaderTest"/>
+            <class name="com.nishitweltech.automation.api.PetApiTest"/>
+            <class name="com.nishitweltech.automation.api.PetFormApiTest"/>
+            <class name="com.nishitweltech.automation.api.StoreApiTest"/>
+            <class name="com.nishitweltech.automation.api.UserApiTest"/>
         </classes>
     </test>
 </suite>
