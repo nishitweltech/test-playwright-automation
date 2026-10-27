@@ -9,6 +9,7 @@
             <class name="com.nishitweltech.automation.runners.TestNGRunner"/>
             <class name="com.nishitweltech.automation.utils.TestDataReaderTest"/>
             <class name="com.nishitweltech.automation.api.PetApiTest"/>
+            <class name="com.nishitweltech.automation.api.PetFormApiTest"/>
             <class name="com.nishitweltech.automation.api.StoreApiTest"/>
             <class name="com.nishitweltech.automation.api.UserApiTest"/>
         </classes>
