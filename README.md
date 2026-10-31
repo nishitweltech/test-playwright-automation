@@ -50,29 +50,34 @@ Extent Spark HTML, Cucumber HTML, and Cucumber JSON reports. Email is opt-in.
 
 ### SMTP environment configuration
 
-Configure these environment variables outside source control:
+Configure these environment variables outside source control. For Mailtrap
+Email Sandbox, use the SMTP credentials shown in your Mailtrap inbox:
 
 | Variable | Purpose |
 |---|---|
-| `SMTP_HOST` | SMTP server hostname (required for email) |
-| `SMTP_PORT` | SMTP port (default: 587) |
-| `SMTP_FROM` | Sender address (required for email) |
-| `SMTP_USERNAME` | SMTP username, if authentication is required |
-| `SMTP_PASSWORD` | SMTP password/app password, if authentication is required |
-| `SMTP_STARTTLS` | STARTTLS toggle (default: true) |
-| `REPORT_EMAIL_TO` | Optional default customer recipient(s), comma-separated |
+| `SMTP_HOST` | Mailtrap sandbox host, usually `sandbox.smtp.mailtrap.io` |
+| `SMTP_PORT` | Mailtrap sandbox port, usually `2525` |
+| `SMTP_FROM` | Sender address (required; e.g. `automation@example.com`) |
+| `SMTP_USERNAME` | Mailtrap sandbox SMTP username |
+| `SMTP_PASSWORD` | Mailtrap sandbox SMTP password |
+| `SMTP_STARTTLS` | Enable required STARTTLS (default: `true`) |
+| `REPORT_EMAIL_TO` | Default recipient(s), comma-separated |
 
-Example (PowerShell):
+Mailtrap Email Sandbox captures messages in its inbox for testing; it does not
+deliver them to the recipient's real email inbox.
+
+After configuring the SMTP values in your Windows user environment or secret
+store, run the CLI from a new PowerShell window:
 
 ```powershell
-$env:SMTP_HOST = "smtp.example.com"
-$env:SMTP_PORT = "587"
-$env:SMTP_FROM = "automation@example.com"
-$env:SMTP_USERNAME = "automation@example.com"
-$env:SMTP_PASSWORD = $env:AUTOMATION_SMTP_SECRET
-$env:REPORT_EMAIL_TO = "customer@example.com"
-mvn -q compile exec:java -Dexec.args="--email"
+mvn -q compile exec:java '-Dexec.args=--email'
 ```
+
+Keep SMTP credentials in user-level environment variables or a trusted secret
+store, never in `.env.example` or other tracked files. Restart IntelliJ and
+open a new terminal after changing persistent Windows environment variables.
+The checked-in `.env.example` contains placeholders and is not loaded by the
+CLI; the CLI reads process environment variables.
 
 ### Pre-test scripts
 

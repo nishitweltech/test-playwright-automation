@@ -29,7 +29,7 @@ The CLI asks for the base URL, headless mode, Cucumber tags, optional feature fi
 To force email mode (the CLI still asks for recipients):
 
 ```bash
-mvn -q compile exec:java -Dexec.args="--email"
+mvn -q compile exec:java '-Dexec.args=--email'
 ```
 
 To suppress email prompts:
@@ -53,7 +53,12 @@ Email is opt-in. Configure these environment variables locally or in a trusted C
 - `SMTP_STARTTLS` (default `true`)
 - `REPORT_EMAIL_TO` (optional default recipient list)
 
-Never put real values in tracked property files. Reports are sent only after the run and only when email is enabled. The CLI attaches the available Extent Spark HTML, Cucumber HTML, and Cucumber JSON reports.
+For Mailtrap Email Sandbox, use the inbox's SMTP credentials, host
+`sandbox.smtp.mailtrap.io`, port `2525`, and STARTTLS. Sandbox messages are
+captured in Mailtrap and are not delivered to real recipient inboxes. Never put
+real values in tracked property files. Reports are sent only after the run and
+only when email is enabled. The CLI attaches the available Extent Spark HTML,
+Cucumber HTML, and Cucumber JSON reports.
 
 ## Expected report locations
 - `test-output/extent/Spark.html`

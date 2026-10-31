@@ -53,15 +53,15 @@ public final class TestExecutionAgent {
             }
         }
 
-        List<String> command = new ArrayList<>();
-        command.add(mavenCommand());
-        command.add("clean");
-        command.add("test");
-        command.add("-DbaseUrl=" + baseUrl);
-        command.add("-Dheadless=" + headless.equalsIgnoreCase("yes"));
-        if (!tags.isBlank()) command.add("-Dcucumber.filter.tags=" + tags);
-        if (!feature.isBlank()) command.add("-Dcucumber.features=" + feature);
+        List<String> mavenArguments = new ArrayList<>();
+        mavenArguments.add("clean");
+        mavenArguments.add("test");
+        mavenArguments.add("-DbaseUrl=" + baseUrl);
+        mavenArguments.add("-Dheadless=" + headless.equalsIgnoreCase("yes"));
+        if (!tags.isBlank()) mavenArguments.add("-Dcucumber.filter.tags=" + tags);
+        if (!feature.isBlank()) mavenArguments.add("-Dcucumber.features=" + feature);
 
+        List<String> command = mavenInvocation(mavenArguments);
         System.out.println("\nExecuting: " + String.join(" ", command));
         LocalDateTime started = LocalDateTime.now();
         int testExit = new ProcessBuilder(command).directory(ROOT.toFile())
@@ -144,9 +144,36 @@ public final class TestExecutionAgent {
         return new ProcessBuilder(command).directory(ROOT.toFile()).inheritIO().start().waitFor();
     }
 
-    private static String mavenCommand() {
+    private static List<String> mavenInvocation(List<String> arguments) {
         Path wrapper = ROOT.resolve(isWindows() ? "mvnw.cmd" : "mvnw");
-        return Files.isRegularFile(wrapper) ? wrapper.toString() : "mvn";
+        String executable = Files.isRegularFile(wrapper) ? wrapper.toString() : mavenCommand();
+        List<String> command = new ArrayList<>();
+        if (isWindows()) {
+            command.add("cmd.exe");
+            command.add("/c");
+        }
+        command.add(executable);
+        command.addAll(arguments);
+        return command;
+    }
+
+    private static String mavenCommand() {
+        if (isWindows()) {
+            for (String home : List.of(System.getProperty("maven.home", ""),
+                    System.getenv().getOrDefault("MAVEN_HOME", ""),
+                    System.getenv().getOrDefault("M2_HOME", ""))) {
+                if (!home.isBlank()) {
+                    Path launcher = Path.of(home, "bin", "mvn.cmd");
+                    if (Files.isRegularFile(launcher)) return launcher.toString();
+                }
+            }
+            for (String entry : System.getenv().getOrDefault("PATH", "").split(";")) {
+                Path launcher = Path.of(entry, "mvn.cmd");
+                if (Files.isRegularFile(launcher)) return launcher.toString();
+            }
+            return "mvn.cmd";
+        }
+        return "mvn";
     }
 
     private static boolean isWindows() {
@@ -165,16 +192,23 @@ public final class TestExecutionAgent {
         String username = System.getenv("SMTP_USERNAME");
         String password = System.getenv("SMTP_PASSWORD");
         boolean auth = username != null && !username.isBlank();
+        boolean startTls = Boolean.parseBoolean(
+                System.getenv().getOrDefault("SMTP_STARTTLS", "true"));
 
         Properties props = new Properties();
         props.put("mail.smtp.host", host);
         props.put("mail.smtp.port", port);
         props.put("mail.smtp.auth", Boolean.toString(auth));
-        props.put("mail.smtp.starttls.enable",
-                System.getenv().getOrDefault("SMTP_STARTTLS", "true"));
+        props.put("mail.smtp.starttls.enable", Boolean.toString(startTls));
+        props.put("mail.smtp.starttls.required", Boolean.toString(startTls));
+        props.put("mail.smtp.ssl.checkserveridentity", "true");
+        props.put("mail.smtp.connectiontimeout", "10000");
+        props.put("mail.smtp.timeout", "10000");
+        props.put("mail.smtp.writetimeout", "10000");
+        if (auth) requiredEnv("SMTP_PASSWORD");
         Session session = Session.getInstance(props, auth ? new Authenticator() {
             @Override protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication(username, password == null ? "" : password);
+                return new PasswordAuthentication(username, password);
             }
         } : null);
 

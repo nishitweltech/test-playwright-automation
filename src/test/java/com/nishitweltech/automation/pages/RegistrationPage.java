@@ -12,7 +12,7 @@ public class RegistrationPage extends BasePage {
     private static final String YEAR = "#yearbox";
     private static final String MONTH = "select[ng-model='monthbox']";
     private static final String DAY = "#daybox";
-    private static final String PASSWORD = "#firstpassword";
+    private static final String PASSWORD = "#firstpasswords";
     private static final String CONFIRM_PASSWORD = "#secondpassword";
     public String BuildVersion;
 
