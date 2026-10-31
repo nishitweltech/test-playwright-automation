@@ -20,7 +20,7 @@
         <extent.adapter.version>1.14.0</extent.adapter.version>
         <surefire.version>3.5.3</surefire.version>
         <exec.maven.version>3.5.0</exec.maven.version>
-        <jakarta.mail.version>2.1.3</jakarta.mail.version>
+        <jakarta.mail.version>2.0.5</jakarta.mail.version>
     </properties>
 
     <dependencies>
