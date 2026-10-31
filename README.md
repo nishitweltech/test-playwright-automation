@@ -2,7 +2,7 @@
 
 This repository contains a runnable UI test framework for the public demo at
 `https://demo.automationtesting.in/Index.html`. It uses Java 17, Maven,
-Playwright for Java, Cucumber BDD with JUnit 4, Page Object Model, and the
+Playwright for Java, Cucumber BDD with TestNG, Page Object Model, and the
 ExtentReports Cucumber 7 adapter.
 
 ## Prerequisites
@@ -26,15 +26,70 @@ On Linux CI, install the browser's operating-system dependencies as well:
 mvn exec:java -Dexec.mainClass=com.microsoft.playwright.CLI -Dexec.args="install --with-deps chromium"
 ```
 
-## Run tests
+## Interactive local execution agent
 
-Run all Cucumber scenarios through the TestNG suite:
+Launch the user-interactive CLI from the repository root:
+
+```bash
+mvn -q compile exec:java
+```
+
+The CLI prompts for the application base URL, headless mode, Cucumber tag
+expression, optional feature file, optional pre-test script from `scripts/`,
+and whether to email generated reports.
+
+Email can be explicitly enabled or disabled:
+
+```bash
+mvn -q compile exec:java -Dexec.args="--email"
+mvn -q compile exec:java -Dexec.args="--no-email"
+```
+
+The CLI runs `mvn clean test`, preserves the test exit code, and can attach the
+Extent Spark HTML, Cucumber HTML, and Cucumber JSON reports. Email is opt-in.
+
+### SMTP environment configuration
+
+Configure these environment variables outside source control:
+
+| Variable | Purpose |
+|---|---|
+| `SMTP_HOST` | SMTP server hostname (required for email) |
+| `SMTP_PORT` | SMTP port (default: 587) |
+| `SMTP_FROM` | Sender address (required for email) |
+| `SMTP_USERNAME` | SMTP username, if authentication is required |
+| `SMTP_PASSWORD` | SMTP password/app password, if authentication is required |
+| `SMTP_STARTTLS` | STARTTLS toggle (default: true) |
+| `REPORT_EMAIL_TO` | Optional default customer recipient(s), comma-separated |
+
+Example (PowerShell):
+
+```powershell
+$env:SMTP_HOST = "smtp.example.com"
+$env:SMTP_PORT = "587"
+$env:SMTP_FROM = "automation@example.com"
+$env:SMTP_USERNAME = "automation@example.com"
+$env:SMTP_PASSWORD = $env:AUTOMATION_SMTP_SECRET
+$env:REPORT_EMAIL_TO = "customer@example.com"
+mvn -q compile exec:java -Dexec.args="--email"
+```
+
+### Pre-test scripts
+
+Put reviewed setup scripts directly inside `scripts/`. Supported extensions:
+`.sh`, `.bat`, `.cmd`, and `.ps1`. The CLI displays available scripts and
+asks before executing one. Select `0` to skip. Do not put secrets in scripts.
+
+The GitHub Copilot custom agent is available at
+`.github/agents/playwright-test-execution.agent.md`.
+
+## Direct Maven execution
+
+Run all Cucumber scenarios:
 
 ```bash
 mvn clean test
 ```
-
-The Maven build uses `src/test/resources/testng.xml`, which runs the Cucumber TestNG runner and test-data reader checks.
 
 Run only smoke scenarios:
 
@@ -48,17 +103,11 @@ Run a specific feature:
 mvn clean test -Dcucumber.features=src/test/resources/features/registration.feature
 ```
 
-Set configuration with JVM system properties (system properties override
-`src/test/resources/config/config.properties`):
+Override the application URL/headless setting:
 
 ```bash
 mvn clean test -DbaseUrl=https://demo.automationtesting.in/Index.html -Dheadless=false -Dtimeout=30000
 ```
-
-The sign-in smoke scenario verifies that the site's actual invalid-credentials
-message appears. Registration scenarios check the live form's required fields
-and client-side password confirmation. No private or pre-registered account is
-needed.
 
 ## TestNG, Extent Reports, and Test Data
 
@@ -69,59 +118,9 @@ needed.
 - Reusable CSV reader: `src/test/java/com/nishitweltech/automation/utils/TestDataReader.java`
 - Sample data: `src/test/resources/testdata/login-data.csv`
 
-`TestDataReader.readCsv(...)` loads classpath CSV data into `List<Map<String, String>>`, so test or step classes can consume rows by column name.
-
 ## Reports
-
-After a test run:
 
 - Cucumber HTML: `test-output/cucumber/cucumber.html`
 - Cucumber JSON: `test-output/cucumber/cucumber.json`
 - Extent Spark HTML: `test-output/extent/Spark.html`
-- Failure screenshots are attached to the failed Cucumber scenario and included
-  in the report output.
-
-## Project structure
-
-```text
-src/test/java/com/nishitweltech/automation/
-  hooks/          Browser setup, teardown, and failure screenshots
-  pages/          LandingPage, SignInPage, RegistrationPage, and BasePage
-  runners/        Cucumber JUnit runner and report configuration
-  steps/          Sign-in and registration step definitions
-  utils/          Configuration reader and Playwright lifecycle
-src/test/resources/
-  config/         Runtime defaults
-  features/       Cucumber scenarios
-  extent.properties
-  extent-config.xml
-```
-
-
-## Petstore API Automation (Playwright Java)
-
-The same Maven/TestNG project also exercises the public Swagger Petstore REST API
-using Playwright Java's `APIRequestContext` (no browser is required for API tests).
-
-- Base URL: `https://petstore.swagger.io/v2`
-- Override with `-DapiBaseUrl=https://your-host/v2` or `PETSTORE_BASE_URL`.
-- API tests: `src/test/java/com/nishitweltech/automation/api/`
-- Extent Spark API report: `test-output/api/ApiSpark.html`
-- Run the complete UI + API suite: `mvn -B clean test`
-- Run API tests only: `mvn -B -Dtest=PetApiTest,StoreApiTest,UserApiTest test`
-
-### API coverage
-
-- **Pet:** create, retrieve, update, delete, find by status, find by tags,
-  upload image, and unknown pet ID negative validation.
-- **Store:** inventory, create/retrieve/delete order, and invalid order ID.
-- **User:** create/retrieve/update/delete, create users with array/list payloads,
-  login, and logout.
-- **Cross-cutting checks:** HTTP status codes, response payload assertions,
-  JSON response shape, unique test data, and cleanup for created test entities.
-
-The Swagger Petstore is a shared public demo service, so its data and availability
-are outside this project's control. API scenarios mutate demo data using unique
-IDs/usernames and should be run against a dedicated environment for deterministic
-production-grade CI. The test suite validates documented success and selected
-negative paths; it does not claim exhaustive security/performance testing.
+- Failure screenshots: `test-output/extent/screenshots/`
